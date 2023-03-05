@@ -6,6 +6,14 @@ const requestCall = axios.create({
     baseURL
 })
 
-export const getCoinAssets = () => {
-    return requestCall.get('assets');
+export const getAssets = (params) => {
+    return requestCall.get('assets', {
+        params: {...params}
+    });
+}
+
+export const getRates = (params) => {
+    return requestCall.get('rates', {
+        params: {...params}
+    });
 }

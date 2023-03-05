@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { getCoinAssets } from '../data/axios'
+import { getAssets, getRates } from '../data/axios'
 import { round } from 'lodash';
+import { Filter, Search } from 'react-feather'
+
+const DEFAULT_RATE = {
+    rateUsd: 1,
+    symbol: 'USD'
+};
 
 const App = () => {
+    const [currency, setCurrency] = useState(DEFAULT_RATE);
+    const [search, setSearch] = useState('')
     const [assets, setAssets] = useState(null)
+    const [rates, setRates] = useState(null)
     const [openFilters, setOpenFilters] = useState(false)
     const [filters, setFilters] = useState({
         changes: true,
@@ -14,17 +23,25 @@ const App = () => {
     });
 
     useEffect(() => {
-        getCoinAssets()
+        getAssets()
             .then(result => {
                 if (result?.status === 200) {
                     setAssets(result?.data);
                 }
             })
             .catch(e => console.error(e));
+
+        getRates()
+            .then(result => {
+                if (result?.status === 200) {
+                    setRates(result?.data);
+                }
+            })
+            .catch(e => console.error(e));
     }, []);
 
     const formatPrice = (val) => {
-        const price = parseFloat(val);
+        const price = parseFloat(val) * (1/currency?.rateUsd);
         let value = round(price, 8);
 
         if (price > 1) {
@@ -35,7 +52,7 @@ const App = () => {
 
         return value.toLocaleString('en-US', {
             style: 'currency',
-            currency: 'USD',
+            currency: currency?.symbol,
             maximumSignificantDigits: 8
         });
     }
@@ -67,43 +84,94 @@ const App = () => {
         return <span className={`${percent > 0 ? 'green' : 'red'}`}><strong>{`${percent}%`}</strong></span>;
     }
 
-    console.log(filters)
-
     const onFiltering = (key) => {
         return (e) => setFilters({...filters, [key]: e.target.checked})
+    }
+
+    const onChangeRate = (e) => {
+        const selectedId = e.target.value;
+
+        if (selectedId === 'default') {
+            return setCurrency(DEFAULT_RATE);
+        }
+
+        rates && rates?.data && rates.data.map((rate) => {
+            const {id, rateUsd, symbol, type} = rate;
+
+            if (selectedId === id && type === 'fiat') {
+                setCurrency({
+                    rateUsd,
+                    symbol
+                })
+            }
+
+            return null;
+        })
+    }
+
+    const updateAssets = () => {
+        getAssets({
+            search
+        })
+            .then(result => {
+                if (result?.status === 200) {
+                    setAssets(result?.data);
+                }
+            })
+            .catch(e => console.error(e));
     }
 
     return (
         <div className='content'>
             <h1>Koin Cek</h1>
             <div className='notice'>This project is just for fun. I didn't guarantee the accuracy of any information here. All data is provided by <a href='https://docs.coincap.io/'>CoinCap API 2.0</a></div>
-            <button className='filter-button' onClick={() => setOpenFilters(!openFilters)}>Filters</button>
+            <div className='toolbar'>
+                <input type='text' value={search} onChange={e => setSearch(e.target.value)}/>
+                <div className='search-button' onClick={updateAssets}><Search size={14}/></div>
+                <div className='filter-button' onClick={() => setOpenFilters(!openFilters)}><Filter size={14}/></div>
+            </div>
             {openFilters && <div className='filters'>
-                <h5>Changes in 24 Hours</h5>
-                <label className="switch">
-                    <input type="checkbox" checked={filters?.changes} onChange={onFiltering('changes')}/>
-                    <span className="slider round"></span>
-                </label>
-                <h5>Market Cap</h5>
-                <label className="switch">
-                    <input type="checkbox" checked={filters?.marketCap} onChange={onFiltering('marketCap')}/>
-                    <span className="slider round"></span>
-                </label>
-                <h5>Supply Number in Percent</h5>
-                <label className="switch">
-                    <input type="checkbox" checked={filters?.supplyPercent} onChange={onFiltering('supplyPercent')}/>
-                    <span className="slider round"></span>
-                </label>
-                <h5>Supply Number</h5>
-                <label className="switch">
-                    <input type="checkbox" checked={filters?.supplyNormal} onChange={onFiltering('supplyNormal')}/>
-                    <span className="slider round"></span>
-                </label>
-                <h5>Volume Traded in 24 Hours</h5>
-                <label className="switch">
-                    <input type="checkbox" checked={filters?.volumes} onChange={onFiltering('volumes')}/>
-                    <span className="slider round"></span>
-                </label>
+                <select name="rates" id="rates" onChange={onChangeRate}>
+                    <option key={'default'} value={'default'}>{'USD'}</option>;
+                    {rates && rates?.data && rates.data.map((rate) => {
+                        return <option key={rate?.id} value={rate?.id}>{rate?.symbol}</option>;
+                    })}
+                </select>
+                <div className='switch-button'>
+                    <h5>Changes in 24 Hours</h5>
+                    <label className="switch">
+                        <input type="checkbox" checked={filters?.changes} onChange={onFiltering('changes')}/>
+                        <span className="slider round"></span>
+                    </label>
+                </div>
+                <div className='switch-button'>
+                    <h5>Market Cap</h5>
+                    <label className="switch">
+                        <input type="checkbox" checked={filters?.marketCap} onChange={onFiltering('marketCap')}/>
+                        <span className="slider round"></span>
+                    </label>
+                </div>
+                <div className='switch-button'>
+                    <h5>Supply Number in Percent</h5>
+                    <label className="switch">
+                        <input type="checkbox" checked={filters?.supplyPercent} onChange={onFiltering('supplyPercent')}/>
+                        <span className="slider round"></span>
+                    </label>
+                </div>
+                <div className='switch-button'>
+                    <h5>Supply Number</h5>
+                    <label className="switch">
+                        <input type="checkbox" checked={filters?.supplyNormal} onChange={onFiltering('supplyNormal')}/>
+                        <span className="slider round"></span>
+                    </label>
+                </div>
+                <div className='switch-button'>
+                    <h5>Volume Traded in 24 Hours</h5>
+                    <label className="switch">
+                        <input type="checkbox" checked={filters?.volumes} onChange={onFiltering('volumes')}/>
+                        <span className="slider round"></span>
+                    </label>
+                </div>
             </div>}
             <table className='styled-table'>
                 <thead>
