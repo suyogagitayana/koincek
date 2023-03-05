@@ -24,13 +24,23 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: center;
 }
 
+.title {
+  text-align: center;
+}
+
 .content {
   width: 100%;
-  max-width: 768px;
+  max-width: 1024px;
   flex-wrap: wrap;
 }
 
+.table-wrapper {
+  width: 100%;
+  overflow-x: scroll;
+}
+
 .styled-table {
+  width: 100%;
   border-collapse: collapse;
   margin: 25px 0;
   font-size: 0.9em;
@@ -48,6 +58,11 @@ h1, h2, h3, h4, h5, h6 {
 .styled-table th,
 .styled-table td {
     padding: 12px 15px;
+}
+
+.styled-table th.rank,
+.styled-table td.rank {
+  width: 40px;
 }
 
 .styled-table th:not(.rank),
@@ -159,6 +174,7 @@ input:checked + .slider:before {
   flex-wrap: wrap;
   width: 100%;
   padding: 20px;
+  margin-top: 8px;
   background-color: #f3f3f3;
 }
 
@@ -181,6 +197,10 @@ input:checked + .slider:before {
   line-height: 1.25em;
   display: flex;
   align-items: center;
+}
+
+.search-input {
+  width: 100%;
 }
 
 .notice {

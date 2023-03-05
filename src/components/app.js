@@ -123,10 +123,10 @@ const App = () => {
 
     return (
         <div className='content'>
-            <h1>Koin Cek</h1>
+            <h1 className='title'>Koin Cek</h1>
             <div className='notice'>This project is just for fun. I didn't guarantee the accuracy of any information here. All data is provided by <a href='https://docs.coincap.io/'>CoinCap API 2.0</a></div>
             <div className='toolbar'>
-                <input type='text' value={search} onChange={e => setSearch(e.target.value)}/>
+                <input className='search-input' type='text' value={search} onChange={e => setSearch(e.target.value)}/>
                 <div className='search-button' onClick={updateAssets}><Search size={14}/></div>
                 <div className='filter-button' onClick={() => setOpenFilters(!openFilters)}><Filter size={14}/></div>
             </div>
@@ -173,36 +173,38 @@ const App = () => {
                     </label>
                 </div>
             </div>}
-            <table className='styled-table'>
-                <thead>
-                    <tr>
-                        <th className='rank' onClick={sortRank}>Rank</th>
-                        <th>Name</th>
-                        <th>Symbol</th>
-                        <th>Price</th>
-                        {filters?.changes && <th>Changes in 24H</th>}
-                        {filters?.marketCap && <th>Market Cap</th>}
-                        {filters?.supplyNormal && <th>Circulating Supply</th>}
-                        {filters?.supplyPercent && <th>Circulating Supply %</th>}
-                        {filters?.volumes && <th>Volumes Traded in 24H</th>}
-                    </tr>
-                </thead>
-                <tbody>
-                    {assets && assets?.data && assets.data.map((asset, key) => {
-                        return <tr key={key}>
-                            <td className='rank'><strong>{`#${asset.rank}`}</strong></td>
-                            <td><a href={asset.explorer}>{asset.name}</a></td>
-                            <td>{asset.symbol}</td>
-                            <td>{formatPrice(asset.priceUsd)}</td>
-                            {filters?.changes && <td>{formatChanges(asset.changePercent24Hr)}</td>}
-                            {filters?.marketCap && <td>{formatPrice(asset.marketCapUsd)}</td>}
-                            {filters?.supplyNormal && <td>{formatSupply(asset.supply, asset.maxSupply)}</td>}
-                            {filters?.supplyPercent && <td>{formatSupply(asset.supply, asset.maxSupply, true)}</td>}
-                            {filters?.volumes && <td>{formatPrice(asset.volumeUsd24Hr)}</td>}
+            <div className='table-wrapper'>
+                <table className='styled-table'>
+                    <thead>
+                        <tr>
+                            <th className='rank' onClick={sortRank}>Rank</th>
+                            <th>Name</th>
+                            <th>Symbol</th>
+                            <th>Price</th>
+                            {filters?.changes && <th>Changes in 24H</th>}
+                            {filters?.marketCap && <th>Market Cap</th>}
+                            {filters?.supplyNormal && <th>Circulating Supply</th>}
+                            {filters?.supplyPercent && <th>Circulating Supply %</th>}
+                            {filters?.volumes && <th>Volumes Traded in 24H</th>}
                         </tr>
-                    })}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {assets && assets?.data && assets.data.map((asset, key) => {
+                            return <tr key={key}>
+                                <td className='rank'><strong>{`#${asset.rank}`}</strong></td>
+                                <td><a href={asset.explorer}>{asset.name}</a></td>
+                                <td>{asset.symbol}</td>
+                                <td>{formatPrice(asset.priceUsd)}</td>
+                                {filters?.changes && <td>{formatChanges(asset.changePercent24Hr)}</td>}
+                                {filters?.marketCap && <td>{formatPrice(asset.marketCapUsd)}</td>}
+                                {filters?.supplyNormal && <td>{formatSupply(asset.supply, asset.maxSupply)}</td>}
+                                {filters?.supplyPercent && <td>{formatSupply(asset.supply, asset.maxSupply, true)}</td>}
+                                {filters?.volumes && <td>{formatPrice(asset.volumeUsd24Hr)}</td>}
+                            </tr>
+                        })}
+                    </tbody>
+                </table>
+            </div>
         </div>
     )
 }
