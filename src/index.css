@@ -173,7 +173,7 @@ input:checked + .slider:before {
   display: flex;
   flex-wrap: wrap;
   width: 100%;
-  padding: 20px;
+  padding: 12px 24px;
   margin-top: 8px;
   background-color: #f3f3f3;
 }

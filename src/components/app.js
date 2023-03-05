@@ -131,12 +131,15 @@ const App = () => {
                 <div className='filter-button' onClick={() => setOpenFilters(!openFilters)}><Filter size={14}/></div>
             </div>
             {openFilters && <div className='filters'>
-                <select name="rates" id="rates" onChange={onChangeRate}>
-                    <option key={'default'} value={'default'}>{'USD'}</option>;
-                    {rates && rates?.data && rates.data.map((rate) => {
-                        return <option key={rate?.id} value={rate?.id}>{rate?.symbol}</option>;
-                    })}
-                </select>
+                <div className='switch-button'>
+                    <h5>Select Currency</h5>
+                    <select name="rates" id="rates" onChange={onChangeRate}>
+                        <option key={'default'} selected={currency?.symbol === 'USD'} value={'default'}>{'USD'}</option>;
+                        {rates && rates?.data && rates.data.map((rate) => {
+                            return <option key={rate?.id} selected={currency?.symbol === rate?.symbol} value={rate?.id}>{rate?.symbol}</option>;
+                        })}
+                    </select>
+                </div>
                 <div className='switch-button'>
                     <h5>Changes in 24 Hours</h5>
                     <label className="switch">
