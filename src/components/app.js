@@ -89,16 +89,16 @@ const App = () => {
     }
 
     const onChangeRate = (e) => {
-        const selectedId = e.target.value;
+        const selected = e.target.value;
 
-        if (selectedId === 'default') {
+        if (selected === 'default') {
             return setCurrency(DEFAULT_RATE);
         }
 
         rates && rates?.data && rates.data.map((rate) => {
-            const {id, rateUsd, symbol, type} = rate;
+            const {rateUsd, symbol, type} = rate;
 
-            if (selectedId === id && type === 'fiat') {
+            if (selected === symbol && type === 'fiat') {
                 setCurrency({
                     rateUsd,
                     symbol
@@ -133,10 +133,10 @@ const App = () => {
             {openFilters && <div className='filters'>
                 <div className='switch-button'>
                     <h5>Select Currency</h5>
-                    <select name="rates" id="rates" onChange={onChangeRate}>
-                        <option key={'default'} selected={currency?.symbol === 'USD'} value={'default'}>{'USD'}</option>;
+                    <select name="rates" id="rates" value={currency?.symbol} onChange={onChangeRate}>
+                        <option key={'default'} value={'USD'}>{'USD'}</option>;
                         {rates && rates?.data && rates.data.map((rate) => {
-                            return <option key={rate?.id} selected={currency?.symbol === rate?.symbol} value={rate?.id}>{rate?.symbol}</option>;
+                            return rate?.type === 'fiat' && <option key={rate?.id} value={rate?.symbol}>{rate?.symbol}</option>;
                         })}
                     </select>
                 </div>
