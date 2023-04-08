@@ -121,12 +121,14 @@ const App = () => {
             .catch(e => console.error(e));
     }
 
+    const onEnter = e => e.key === 'Enter' && updateAssets();
+
     return (
         <div className='content'>
             <h1 className='title'>Koin Cek</h1>
             <div className='notice'>This project is just for fun. I didn't guarantee the accuracy of any information here. All data is provided by <a href='https://docs.coincap.io/'>CoinCap API 2.0</a></div>
             <div className='toolbar'>
-                <input className='search-input' type='text' value={search} onChange={e => setSearch(e.target.value)}/>
+                <input className='search-input' type='text' value={search} onChange={e => setSearch(e.target.value)} onKeyDown={onEnter}/>
                 <div className='search-button' onClick={updateAssets}><Search size={14}/></div>
                 <div className='filter-button' onClick={() => setOpenFilters(!openFilters)}><Filter size={14}/></div>
             </div>
