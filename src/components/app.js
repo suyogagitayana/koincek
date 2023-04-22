@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { getAssets, getRates } from '../data/axios'
 import { round } from 'lodash';
-import { Filter, Search } from 'react-feather'
+import { Filter, Search, X } from 'react-feather'
 
 const DEFAULT_RATE = {
     rateUsd: 1,
@@ -10,7 +10,8 @@ const DEFAULT_RATE = {
 
 const App = () => {
     const [currency, setCurrency] = useState(DEFAULT_RATE);
-    const [search, setSearch] = useState('')
+    const [search, setSearch] = useState('');
+    const [focus, setFocus] = useState(false);
     const [assets, setAssets] = useState(null)
     const [rates, setRates] = useState(null)
     const [openFilters, setOpenFilters] = useState(false)
@@ -81,7 +82,7 @@ const App = () => {
     const formatChanges = (val) => {
         const percent = round(val, 2);
 
-        return <span className={`${percent > 0 ? 'green' : 'red'}`}><strong>{`${percent}%`}</strong></span>;
+        return <span className={`${percent > 0 ? 'cl-green' : 'cl-red'}`}><strong>{`${percent > 0 ? `+${percent}` : percent}%`}</strong></span>;
     }
 
     const onFiltering = (key) => {
@@ -124,93 +125,116 @@ const App = () => {
     const onEnter = e => e.key === 'Enter' && updateAssets();
 
     return (
-        <div className='content'>
-            <h1 className='title'>Koin Cek</h1>
-            <div className='notice'>This project is just for fun. I didn't guarantee the accuracy of any information here. All data is provided by <a href='https://docs.coincap.io/'>CoinCap API 2.0</a></div>
-            <div className='toolbar'>
-                <input className='search-input' type='text' value={search} onChange={e => setSearch(e.target.value)} onKeyDown={onEnter}/>
-                <div className='search-button' onClick={updateAssets}><Search size={14}/></div>
-                <div className='filter-button' onClick={() => setOpenFilters(!openFilters)}><Filter size={14}/></div>
-            </div>
-            {openFilters && <div className='filters'>
-                <div className='switch-button'>
-                    <h5>Select Currency</h5>
-                    <select name="rates" id="rates" value={currency?.symbol} onChange={onChangeRate}>
+        <>
+            <div className='text-center text-xs p-2 bg-yellow cl-yellow sticky inset-x-0 top-0 left-0'>This project is just for fun. I didn't guarantee the accuracy of any information here. All data is provided by <a className='cl-blue' href='https://docs.coincap.io/' target='_blank' rel='noreferrer'>CoinCap API 2.0</a></div>
+            <header className='flex px-8 py-4 justify-between sticky inset-x-0 top-8 left-0 bg-white mx-auto my-0 border-solid border-b-1 border-gray-200'>
+                <div>
+                    <h1 className='text-2xl font-bold cursor-pointer text-gray-800'>
+                        <a href='/'>KOIN<span className='text-xl cl-blue font-normal'>cek</span></a>
+                    </h1>
+                </div>
+                <div>
+                    <ul>
+                        <li></li>
+                    </ul>
+                </div>
+                <div className='flex items-center w-1/3'>
+                    <div className='flex justify-center items-center p-2 text-gray-600 cursor-pointer z-10'><Search size={16}/></div>
+                    <input className='border-gray-200 rounded-2xl border-solid border-1 w-full px-8 py-2 h-8 text-xs -ml-8' placeholder='Type and Enter to search . . .' type='text' value={search} onFocus={() => setFocus(true)} onBlur={() => setFocus(false)} onChange={e => setSearch(e.target.value)} onKeyDown={onEnter}/>
+                    {focus && <div className='flex justify-center items-center p-2 text-gray-600 cursor-pointer -ml-8' onClick={() => setSearch('')}><X size={16}/></div>}
+                    <div className='flex justify-center items-center p-2 cl-blue cursor-pointer mx-3' onClick={() => setOpenFilters(!openFilters)}><Filter size={16}/></div>
+                    <select className='border-solid border-1 border-gray-200' name="rates" id="rates" value={currency?.symbol} onChange={onChangeRate}>
                         <option key={'default'} value={'USD'}>{'USD'}</option>;
                         {rates && rates?.data && rates.data.map((rate) => {
                             return rate?.type === 'fiat' && <option key={rate?.id} value={rate?.symbol}>{rate?.symbol}</option>;
                         })}
                     </select>
                 </div>
-                <div className='switch-button'>
-                    <h5>Changes in 24 Hours</h5>
-                    <label className="switch">
-                        <input type="checkbox" checked={filters?.changes} onChange={onFiltering('changes')}/>
-                        <span className="slider round"></span>
-                    </label>
-                </div>
-                <div className='switch-button'>
-                    <h5>Market Cap</h5>
-                    <label className="switch">
-                        <input type="checkbox" checked={filters?.marketCap} onChange={onFiltering('marketCap')}/>
-                        <span className="slider round"></span>
-                    </label>
-                </div>
-                <div className='switch-button'>
-                    <h5>Supply Number in Percent</h5>
-                    <label className="switch">
-                        <input type="checkbox" checked={filters?.supplyPercent} onChange={onFiltering('supplyPercent')}/>
-                        <span className="slider round"></span>
-                    </label>
-                </div>
-                <div className='switch-button'>
-                    <h5>Supply Number</h5>
-                    <label className="switch">
-                        <input type="checkbox" checked={filters?.supplyNormal} onChange={onFiltering('supplyNormal')}/>
-                        <span className="slider round"></span>
-                    </label>
-                </div>
-                <div className='switch-button'>
-                    <h5>Volume Traded in 24 Hours</h5>
-                    <label className="switch">
-                        <input type="checkbox" checked={filters?.volumes} onChange={onFiltering('volumes')}/>
-                        <span className="slider round"></span>
-                    </label>
-                </div>
-            </div>}
-            <div className='table-wrapper'>
-                <table className='styled-table'>
-                    <thead>
-                        <tr>
-                            <th className='rank' onClick={sortRank}>Rank</th>
-                            <th>Name</th>
-                            <th>Symbol</th>
-                            <th>Price</th>
-                            {filters?.changes && <th>Changes in 24H</th>}
-                            {filters?.marketCap && <th>Market Cap</th>}
-                            {filters?.supplyNormal && <th>Circulating Supply</th>}
-                            {filters?.supplyPercent && <th>Circulating Supply %</th>}
-                            {filters?.volumes && <th>Volumes Traded in 24H</th>}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {assets && assets?.data && assets.data.map((asset, key) => {
-                            return <tr key={key}>
-                                <td className='rank'><strong>{`#${asset.rank}`}</strong></td>
-                                <td><a href={asset.explorer}>{asset.name}</a></td>
-                                <td>{asset.symbol}</td>
-                                <td>{formatPrice(asset.priceUsd)}</td>
-                                {filters?.changes && <td>{formatChanges(asset.changePercent24Hr)}</td>}
-                                {filters?.marketCap && <td>{formatPrice(asset.marketCapUsd)}</td>}
-                                {filters?.supplyNormal && <td>{formatSupply(asset.supply, asset.maxSupply)}</td>}
-                                {filters?.supplyPercent && <td>{formatSupply(asset.supply, asset.maxSupply, true)}</td>}
-                                {filters?.volumes && <td>{formatPrice(asset.volumeUsd24Hr)}</td>}
+            </header>
+            <div className=' text-gray-800'>
+                
+                {openFilters && <div className='filters bg-white sticky inset-x-0 top-24 right-0 pb-4'>
+                    <div className='flex items-center justify-between h-10 pt-8 pb-4 px-8 border-solid border-t-2 border-gray-100 '>
+                        <h5 className='text-sm'>Changes in 24 Hours</h5>
+                        <label className='switch'>
+                            <input type="checkbox" checked={filters?.changes} onChange={onFiltering('changes')}/>
+                            <span className="slider round"></span>
+                        </label>
+                    </div>
+                    <div className='flex items-center justify-between h-10 py-4 px-8'>
+                        <h5 className='text-sm'>Market Cap</h5>
+                        <label className='switch'>
+                            <input type="checkbox" checked={filters?.marketCap} onChange={onFiltering('marketCap')}/>
+                            <span className="slider round"></span>
+                        </label>
+                    </div>
+                    <div className='flex items-center justify-between h-10 py-4 px-8'>
+                        <h5 className='text-sm'>Supply Number in Percent</h5>
+                        <label className='switch'>
+                            <input type="checkbox" checked={filters?.supplyPercent} onChange={onFiltering('supplyPercent')}/>
+                            <span className="slider round"></span>
+                        </label>
+                    </div>
+                    <div className='flex items-center justify-between h-10 py-4 px-8'>
+                        <h5 className='text-sm'>Supply Number</h5>
+                        <label className='switch'>
+                            <input type="checkbox" checked={filters?.supplyNormal} onChange={onFiltering('supplyNormal')}/>
+                            <span className="slider round"></span>
+                        </label>
+                    </div>
+                    <div className='flex items-center justify-between h-10 py-4 px-8'>
+                        <h5 className='text-sm'>Volume Traded in 24 Hours</h5>
+                        <label className='switch'>
+                            <input type="checkbox" checked={filters?.volumes} onChange={onFiltering('volumes')}/>
+                            <span className="slider round"></span>
+                        </label>
+                    </div>
+                </div>}
+
+                <div className='table-wrapper mx-auto my-0 py-4 max-w-6xl overflow-x-auto'>
+
+                    <h1 className='text-2xl font-semibold my-4'>Current Cryptocurrency Price</h1>
+
+                    <p className='text-sm mt-0 mb-8'>List of Cryptocurrency prices according to CoinCap.</p>
+
+                    <table className='styled-table w-full'>
+                        <thead>
+                            <tr className='border-solid border-gray-200 border-y-1 text-left'>
+                                <th className='cursor-pointer underline px-2 py-4 text-sm' onClick={sortRank}>Rank</th>
+                                <th className='px-2 py-4 text-sm'>Name</th>
+                                <th className='px-2 py-4 text-sm'>Symbol</th>
+                                <th className='px-2 py-4 text-sm'>Price</th>
+                                {filters?.changes && <th className='px-2 py-4 text-sm'>Changes in 24H</th>}
+                                {filters?.marketCap && <th className='px-2 py-4 text-sm'>Market Cap</th>}
+                                {filters?.supplyNormal && <th className='px-2 py-4 text-sm'>Circulating Supply</th>}
+                                {filters?.supplyPercent && <th className='px-2 py-4 text-sm'>Circulating Supply %</th>}
+                                {filters?.volumes && <th className='px-2 py-4 text-sm'>Volumes Traded in 24H</th>}
                             </tr>
-                        })}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {assets && assets?.data && assets.data.map((asset, key) => {
+                                return <tr key={key} className='border-solid border-gray-200 border-b-1 text-left'>
+                                    <td className='px-2 py-4 text-sm text-black'><strong>{`#${asset.rank}`}</strong></td>
+                                    <td className='px-2 py-4 text-sm underline cl-blue'><a href={asset.explorer}>{asset.name}</a></td>
+                                    <td className='px-2 py-4 text-sm'>{asset.symbol}</td>
+                                    <td className='px-2 py-4 text-sm'>{formatPrice(asset.priceUsd)}</td>
+                                    {filters?.changes && <td className='px-2 py-4 text-sm'>{formatChanges(asset.changePercent24Hr)}</td>}
+                                    {filters?.marketCap && <td className='px-2 py-4 text-sm'>{formatPrice(asset.marketCapUsd)}</td>}
+                                    {filters?.supplyNormal && <td className='px-2 py-4 text-sm'>{formatSupply(asset.supply, asset.maxSupply)}</td>}
+                                    {filters?.supplyPercent && <td className='px-2 py-4 text-sm flex gap-4 items-center'>
+                                        <div className='bg-gray-300 w-3/4 ml-2 h-1 rounded-2xl'>
+                                            {'∞' !== formatSupply(asset.supply, asset.maxSupply, true) && <div className='bg-blue h-1 rounded-2xl' style={{width: `${formatSupply(asset.supply, asset.maxSupply, true)}`}}></div>}
+                                        </div>
+                                        <p className='w-1/4'>{formatSupply(asset.supply, asset.maxSupply, true)}</p>
+                                    </td>}
+                                    {filters?.volumes && <td className='px-2 py-4 text-sm'>{formatPrice(asset.volumeUsd24Hr)}</td>}
+                                </tr>
+                            })}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+        </>
     )
 }
 
