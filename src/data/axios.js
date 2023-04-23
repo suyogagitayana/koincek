@@ -2,18 +2,26 @@ import axios from 'axios';
 
 const baseURL = 'https://api.coincap.io/v2/';
 
-const requestCall = axios.create({
+const apiCall = axios.create({
     baseURL
 })
 
-export const getAssets = (params) => {
-    return requestCall.get('assets', {
+export const fetchAssets = (params, callback = () => {}) => {
+    apiCall.get('assets', {
         params: {...params}
-    });
+    }).then(result => {
+        if (result?.status === 200) {
+            callback(result?.data);
+        }
+    }).catch(e => console.error(e));;
 }
 
-export const getRates = (params) => {
-    return requestCall.get('rates', {
+export const fetchRates = (params, callback = () => {}) => {
+    apiCall.get('rates', {
         params: {...params}
-    });
+    }).then(result => {
+        if (result?.status === 200) {
+            callback(result?.data);
+        }
+    }).catch(e => console.error(e));;
 }

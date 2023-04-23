@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getAssets, getRates } from '../data/axios'
+import { fetchAssets, fetchRates } from '../data/axios'
 import { round } from 'lodash';
 import { Filter, Search, X } from 'react-feather'
 
@@ -11,7 +11,6 @@ const DEFAULT_RATE = {
 const App = () => {
     const [currency, setCurrency] = useState(DEFAULT_RATE);
     const [search, setSearch] = useState('');
-    const [focus, setFocus] = useState(false);
     const [assets, setAssets] = useState(null)
     const [rates, setRates] = useState(null)
     const [openFilters, setOpenFilters] = useState(false)
@@ -24,21 +23,8 @@ const App = () => {
     });
 
     useEffect(() => {
-        getAssets()
-            .then(result => {
-                if (result?.status === 200) {
-                    setAssets(result?.data);
-                }
-            })
-            .catch(e => console.error(e));
-
-        getRates()
-            .then(result => {
-                if (result?.status === 200) {
-                    setRates(result?.data);
-                }
-            })
-            .catch(e => console.error(e));
+        getAssets();
+        getRates();
     }, []);
 
     const formatPrice = (val) => {
@@ -110,40 +96,25 @@ const App = () => {
         })
     }
 
-    const updateAssets = () => {
-        getAssets({
-            search
-        })
-            .then(result => {
-                if (result?.status === 200) {
-                    setAssets(result?.data);
-                }
-            })
-            .catch(e => console.error(e));
-    }
+    const getRates = (params = {}) => fetchRates({...params}, setRates);
 
-    const onEnter = e => e.key === 'Enter' && updateAssets();
+    const getAssets = (params = {}) => fetchAssets({...params}, setAssets);
+
+    const onEnter = e => e.key === 'Enter' && getAssets({search});
 
     return (
         <>
             <div className='text-center text-xs p-2 bg-yellow cl-yellow sticky inset-x-0 top-0 left-0'>This project is just for fun. I didn't guarantee the accuracy of any information here. All data is provided by <a className='cl-blue' href='https://docs.coincap.io/' target='_blank' rel='noreferrer'>CoinCap API 2.0</a></div>
             <header className='flex px-8 py-4 justify-between sticky inset-x-0 top-8 left-0 bg-white mx-auto my-0 border-solid border-b-1 border-gray-200'>
-                <div>
-                    <h1 className='text-2xl font-bold cursor-pointer text-gray-800'>
-                        <a href='/'>KOIN<span className='text-xl cl-blue font-normal'>cek</span></a>
-                    </h1>
-                </div>
-                <div>
-                    <ul>
-                        <li></li>
-                    </ul>
-                </div>
+                <h3 className='text-2xl font-bold cursor-pointer text-gray-800'>
+                    <a href='/'>KOIN<span className='text-xl cl-blue font-normal'>cek</span></a>
+                </h3>
                 <div className='flex items-center w-1/3'>
-                    <div className='flex justify-center items-center p-2 text-gray-600 cursor-pointer z-10'><Search size={16}/></div>
-                    <input className='border-gray-200 rounded-2xl border-solid border-1 w-full px-8 py-2 h-8 text-xs -ml-8' placeholder='Type and Enter to search . . .' type='text' value={search} onFocus={() => setFocus(true)} onBlur={() => setFocus(false)} onChange={e => setSearch(e.target.value)} onKeyDown={onEnter}/>
-                    {focus && <div className='flex justify-center items-center p-2 text-gray-600 cursor-pointer -ml-8' onClick={() => setSearch('')}><X size={16}/></div>}
+                    <div className='flex justify-center items-center p-2 text-gray-600 z-10'><Search size={16}/></div>
+                    <input className='border-gray-200 rounded-2xl border-solid border-1 w-full px-8 py-2 h-8 text-xs -ml-8' placeholder='Type and Enter to search . . .' type='text' value={search} onChange={e => setSearch(e.target.value)} onKeyDown={onEnter}/>
+                    {search && <div className='flex justify-center items-center p-2 text-gray-600 cursor-pointer -ml-8' onClick={() => {setSearch('');getAssets();}}><X size={16}/></div>}
                     <div className='flex justify-center items-center p-2 cl-blue cursor-pointer mx-3' onClick={() => setOpenFilters(!openFilters)}><Filter size={16}/></div>
-                    <select className='border-solid border-1 border-gray-200' name="rates" id="rates" value={currency?.symbol} onChange={onChangeRate}>
+                    <select className='cursor-pointer border-solid border-1 border-gray-200' name="rates" id="rates" value={currency?.symbol} onChange={onChangeRate}>
                         <option key={'default'} value={'USD'}>{'USD'}</option>;
                         {rates && rates?.data && rates.data.map((rate) => {
                             return rate?.type === 'fiat' && <option key={rate?.id} value={rate?.symbol}>{rate?.symbol}</option>;
@@ -204,11 +175,11 @@ const App = () => {
                                 <th className='px-2 py-4 text-sm'>Name</th>
                                 <th className='px-2 py-4 text-sm'>Symbol</th>
                                 <th className='px-2 py-4 text-sm'>Price</th>
-                                {filters?.changes && <th className='px-2 py-4 text-sm'>Changes in 24H</th>}
+                                {filters?.changes && <th className='px-2 py-4 text-sm'>Changes 24H</th>}
                                 {filters?.marketCap && <th className='px-2 py-4 text-sm'>Market Cap</th>}
-                                {filters?.supplyNormal && <th className='px-2 py-4 text-sm'>Circulating Supply</th>}
-                                {filters?.supplyPercent && <th className='px-2 py-4 text-sm'>Circulating Supply %</th>}
-                                {filters?.volumes && <th className='px-2 py-4 text-sm'>Volumes Traded in 24H</th>}
+                                {filters?.supplyNormal && <th className='px-2 py-4 text-sm'>Total Supply</th>}
+                                {filters?.supplyPercent && <th className='px-2 py-4 text-sm'>Total Supply %</th>}
+                                {filters?.volumes && <th className='px-2 py-4 text-sm'>Volumes Traded 24H</th>}
                             </tr>
                         </thead>
                         <tbody>
@@ -222,10 +193,10 @@ const App = () => {
                                     {filters?.marketCap && <td className='px-2 py-4 text-sm'>{formatPrice(asset.marketCapUsd)}</td>}
                                     {filters?.supplyNormal && <td className='px-2 py-4 text-sm'>{formatSupply(asset.supply, asset.maxSupply)}</td>}
                                     {filters?.supplyPercent && <td className='px-2 py-4 text-sm flex gap-4 items-center'>
-                                        <div className='bg-gray-300 w-3/4 ml-2 h-1 rounded-2xl'>
+                                        <div className='bg-gray-300 w-2/3 h-1 rounded-2xl'>
                                             {'∞' !== formatSupply(asset.supply, asset.maxSupply, true) && <div className='bg-blue h-1 rounded-2xl' style={{width: `${formatSupply(asset.supply, asset.maxSupply, true)}`}}></div>}
                                         </div>
-                                        <p className='w-1/4'>{formatSupply(asset.supply, asset.maxSupply, true)}</p>
+                                        <p className='w-1/3'>{formatSupply(asset.supply, asset.maxSupply, true)}</p>
                                     </td>}
                                     {filters?.volumes && <td className='px-2 py-4 text-sm'>{formatPrice(asset.volumeUsd24Hr)}</td>}
                                 </tr>
