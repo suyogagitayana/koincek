@@ -4,7 +4,7 @@ const baseURL = 'https://api.coincap.io/v2/';
 
 const apiCall = axios.create({
     baseURL
-})
+});
 
 export const fetchAssets = (params, callback = () => {}) => {
     apiCall.get('assets', {
@@ -13,8 +13,8 @@ export const fetchAssets = (params, callback = () => {}) => {
         if (result?.status === 200) {
             callback(result?.data);
         }
-    }).catch(e => console.error(e));;
-}
+    }).catch(() => {});
+};
 
 export const fetchRates = (params, callback = () => {}) => {
     apiCall.get('rates', {
@@ -23,5 +23,5 @@ export const fetchRates = (params, callback = () => {}) => {
         if (result?.status === 200) {
             callback(result?.data);
         }
-    }).catch(e => console.error(e));;
-}
+    }).catch(() => {});
+};

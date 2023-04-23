@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/eslint-parser": "^7.19.1",
+    "@babel/preset-react": "^7.18.6",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^8.34.0",
     "axios": "^1.3.4",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
@@ -14,9 +18,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "wind": "npx tailwindcss -i ./src/assets/css/wind.css -o ./src/assets/css/index.css --watch",
-    "eject": "react-scripts eject"
+    "fix": "npx eslint --fix ./src || echo \"Formatting done! Please fix the remaining warnings and errors\"",
+    "wind": "npx tailwindcss -i ./src/assets/css/wind.css -o ./src/assets/css/index.css --watch"
   },
   "eslintConfig": {
     "extends": [
