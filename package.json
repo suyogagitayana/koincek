@@ -26,7 +26,8 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "fix": "npx eslint --fix ./src || echo \"Formatting done! Please fix the remaining warnings and errors\"",
-    "wind": "npx tailwindcss -i ./src/assets/css/wind.css -o ./src/assets/css/index.css --watch"
+    "wind": "npx tailwindcss -i ./src/assets/css/tailwind/wind.css -o ./src/assets/css/tailwind/index.css --watch",
+    "build:wind": "npx tailwindcss -o ./src/assets/css/tailwind/index.css --minify"
   },
   "eslintConfig": {
     "extends": [
