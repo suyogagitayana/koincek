@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/koincek/static/css/main.88cf79fc.css",
-    "main.js": "/koincek/static/js/main.b00fbb79.js",
+    "main.js": "/koincek/static/js/main.4e411693.js",
     "index.html": "/koincek/index.html",
     "main.88cf79fc.css.map": "/koincek/static/css/main.88cf79fc.css.map",
-    "main.b00fbb79.js.map": "/koincek/static/js/main.b00fbb79.js.map"
+    "main.4e411693.js.map": "/koincek/static/js/main.4e411693.js.map"
   },
   "entrypoints": [
     "static/css/main.88cf79fc.css",
-    "static/js/main.b00fbb79.js"
+    "static/js/main.4e411693.js"
   ]
 }
