@@ -158,7 +158,7 @@ const App = () => {
 
                 <div className='mx-auto my-0 p-4 max-w-6xl'>
                     <h1 className='text-2xl font-semibold my-4'>Current Cryptocurrency Price</h1>
-                    <p className='text-sm mt-0 mb-8'>The following is a comprehensive list of cryptocurrency prices sourced from CoinCap, a prominent platform that offers real-time data and analysis on various cryptocurrencies.</p>
+                    <p className='text-sm mt-0 mb-8'>The following is a comprehensive list of cryptocurrency prices sourced from CoinCap, an API that offers real-time data on various cryptocurrencies.</p>
                 </div>
 
                 <div className='table-wrapper mx-auto my-0 p-4 max-w-6xl overflow-x-scroll'>
