@@ -101,11 +101,11 @@ const App = () => {
     return (
         <>
             <div className='text-center text-xs p-2 bg-yellow cl-yellow sticky inset-x-0 top-0 left-0'>This project is just for fun. I didnt guarantee the accuracy of any information here. All data is provided by <a className='cl-blue' href='https://docs.coincap.io/' target='_blank' rel='noreferrer'>CoinCap API 2.0</a></div>
-            <header className='flex px-8 py-4 justify-between sticky inset-x-0 top-8 left-0 bg-white mx-auto my-0 border-solid border-b-1 border-gray-200'>
-                <h3 className='text-2xl font-bold cursor-pointer text-gray-800'>
+            <header className='flex justify-between sticky inset-x-0 top-8 left-0 bg-white mx-auto my-0 border-solid border-b-1 border-gray-200 px-4 py-4 md:px-8'>
+                <h3 className='text-2xl font-bold cursor-pointer text-gray-800 hidden md:block'>
                     <a href='/'>KOIN<span className='text-xl cl-blue font-normal'>cek</span></a>
                 </h3>
-                <div className='flex items-center w-1/3'>
+                <div className='flex items-center w-full md:w-2/3 lg:w-1/3'>
                     <SearchBar onSearch={getAssets}/>
                     <div className='flex justify-center items-center p-2 cl-blue cursor-pointer mx-3' onClick={() => setOpenFilters(!openFilters)}><Filter size={16}/></div>
                     <select className='cursor-pointer border-solid border-1 border-gray-200' name='rates' id='rates' value={currency?.symbol} onChange={onChangeRate}>
@@ -156,11 +156,12 @@ const App = () => {
                     </div>
                 </div>}
 
-                <div className='table-wrapper mx-auto my-0 py-4 max-w-6xl overflow-x-auto'>
-
+                <div className='mx-auto my-0 p-4 max-w-6xl'>
                     <h1 className='text-2xl font-semibold my-4'>Current Cryptocurrency Price</h1>
+                    <p className='text-sm mt-0 mb-8'>The following is a comprehensive list of cryptocurrency prices sourced from CoinCap, a prominent platform that offers real-time data and analysis on various cryptocurrencies.</p>
+                </div>
 
-                    <p className='text-sm mt-0 mb-8'>List of Cryptocurrency prices according to CoinCap.</p>
+                <div className='table-wrapper mx-auto my-0 p-4 max-w-6xl overflow-x-scroll'>
 
                     <table className='styled-table w-full'>
                         <thead>
